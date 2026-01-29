@@ -1,23 +1,3 @@
-window.ChatWidgetConfig = {
-            webhook: {
-                url: 'https://n8n.srv1298842.hstgr.cloud/webhook/f406671e-c954-4691-b39a-66c90aa2f103/chat',
-                route: 'general'
-            },
-            branding: {
-                logo: 'https://penerimaan.polri.go.id/assets/front_theme/logo_polri.png',
-                name: 'AgentPolri',
-                welcomeText: 'Hi 👋, Ada yang bisa kami bantu?',
-                responseTimeText: 'Kami biasanya merespons secepatnya'
-            },
-            style: {
-                primaryColor: '#854fff',
-                secondaryColor: '#6b3fd4',
-                position: 'right',
-                backgroundColor: '#ffffff', //Background color of the chat widget
-                fontColor: '#333333' //Text color for messages and interface
-            }
-        };
-// Chat Widget Script
 (function() {
     // Create and inject styles
     const styles = `
@@ -521,3 +501,4 @@ window.ChatWidgetConfig = {
     });
 
 })();
+
