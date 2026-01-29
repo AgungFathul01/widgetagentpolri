@@ -1,3 +1,4 @@
+// Chat Widget Script
 (function() {
     // Create and inject styles
     const styles = `
@@ -158,6 +159,7 @@
             word-wrap: break-word;
             font-size: 14px;
             line-height: 1.5;
+            white-space: pre-wrap;
         }
 
         .n8n-chat-widget .chat-message.user {
@@ -295,7 +297,7 @@
             welcomeText: '',
             responseTimeText: '',
             poweredBy: {
-                text: 'Powered by lemdiklat',
+                text: 'Powered by Lemdiklat',
                 link: 'https://penerimaan.polri.go.id/'
             }
         },
@@ -394,6 +396,36 @@
         return crypto.randomUUID();
     }
 
+    function parseMessage(text) {
+        if (!text) return '';
+        
+        // Ensure text is string
+        const str = String(text);
+        
+        // Escape HTML to prevent XSS
+        let safeText = str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+        // Convert URLs to clickable links
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        safeText = safeText.replace(urlRegex, '<a href="$1" target="_blank" style="color: var(--chat--color-primary); text-decoration: underline;">$1</a>');
+
+        // Convert **bold** to <b>
+        safeText = safeText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+        
+        // Convert *italic* to <i>
+        safeText = safeText.replace(/\*(.*?)\*/g, '<i>$1</i>');
+        
+        // Convert `code` to <code>
+        safeText = safeText.replace(/`(.*?)`/g, '<code style="background: rgba(0,0,0,0.1); padding: 2px 4px; border-radius: 4px;">$1</code>');
+
+        return safeText;
+    }
+
     async function startNewConversation() {
         currentSessionId = generateUUID();
         const data = [{
@@ -421,7 +453,8 @@
 
             const botMessageDiv = document.createElement('div');
             botMessageDiv.className = 'chat-message bot';
-            botMessageDiv.textContent = Array.isArray(responseData) ? responseData[0].output : responseData.output;
+            const botText = Array.isArray(responseData) ? responseData[0].output : responseData.output;
+            botMessageDiv.innerHTML = parseMessage(botText);
             messagesContainer.appendChild(botMessageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         } catch (error) {
@@ -442,7 +475,7 @@
 
         const userMessageDiv = document.createElement('div');
         userMessageDiv.className = 'chat-message user';
-        userMessageDiv.textContent = message;
+        userMessageDiv.innerHTML = parseMessage(message);
         messagesContainer.appendChild(userMessageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
@@ -459,7 +492,8 @@
             
             const botMessageDiv = document.createElement('div');
             botMessageDiv.className = 'chat-message bot';
-            botMessageDiv.textContent = Array.isArray(data) ? data[0].output : data.output;
+            const botText = Array.isArray(data) ? data[0].output : data.output;
+            botMessageDiv.innerHTML = parseMessage(botText);
             messagesContainer.appendChild(botMessageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         } catch (error) {
@@ -499,7 +533,4 @@
             chatContainer.classList.remove('open');
         });
     });
-
 })();
-
-
